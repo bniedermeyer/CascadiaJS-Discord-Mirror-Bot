@@ -1,0 +1,20 @@
+{
+  "name": "cjs-discord-mirror-bot",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "googleapis": "^88.2.0"
+  },
+  "devDependencies": {
+    "prettier": "2.4.1"
+  },
+  "scripts": {
+    "test": "abbot run cascadia-js-live-sync",
+    "deploy": "abbot deploy cascadia-js-live-sync",
+    "generate:token": "node scripts/generate-access-token.js"
+  },
+  "keywords": [],
+  "author": "Brenden Niedermeyer <contact@brenden.dev> (https://brenden.dev)",
+  "contributors": [],
+  "license": "MIT"
+}

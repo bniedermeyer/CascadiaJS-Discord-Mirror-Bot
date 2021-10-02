@@ -1,0 +1,16 @@
+﻿/u:System
+/u:System.Collections
+/u:System.Collections.Concurrent;
+/u:System.Collections.Generic
+/u:System.Data
+/u:System.Dynamic
+/u:System.Globalization
+/u:System.Linq
+/u:System.Linq.Expressions
+/u:System.Net.Http
+/u:System.Text
+/u:System.Text.RegularExpressions
+/u:System.Threading
+/u:System.Threading.Tasks
+/u:Serious.Abbot.Scripting
+/u:NodaTime
