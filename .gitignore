@@ -36,3 +36,6 @@ pids
 .env
 .env.test
 .env.production
+
+# Firebase configuration
+.firebaserc
