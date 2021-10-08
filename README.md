@@ -13,7 +13,7 @@ After you have authenticated with Abbot you will be able to run the skill locall
 To make changes to the bot logic, edit `cascadia-js-live-sync/main.js`.
 
 ### :bangbang: A note about authentication  
-It is highly recommended that you enable authentication on the read and write permissions of your Realtime Database. There are multiple ways to [authenticate](https://firebase.google.com/docs/auth) requests with Firebase. We chose the approach of exposing a cloud function that authenticates via the [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup). If you take this approach we also suggest securing any Firebase Function endpoints. 
+It is highly recommended that you enable authentication on the read and write permissions of your Realtime Database. There are multiple ways to [authenticate](https://firebase.google.com/docs/auth) requests with Firebase. We chose the approach of exposing a cloud function that authenticates via the [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup). If you take this approach we also suggest securing any Firebase Function endpoints. For convienience we've created a script that will generate a [JWT](https://jwt.io/introduction) for you to use.
 
 
 After you have secured your requests to Firebase, you can enable auth in your database by adding the following to the `rules` object in the database `Rules` page: 

@@ -6,6 +6,7 @@
     "googleapis": "^88.2.0"
   },
   "devDependencies": {
+    "jsonwebtoken": "^8.5.1",
     "prettier": "2.4.1"
   },
   "scripts": {

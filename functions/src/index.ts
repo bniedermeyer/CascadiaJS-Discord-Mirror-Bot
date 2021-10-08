@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from 'firebase-admin';
+import {verify} from 'jsonwebtoken';
 
 admin.initializeApp(functions.config().firebase)
 
@@ -8,7 +9,7 @@ export const postMessage = functions.https.onRequest((request, response) => {
     const { authorization: authHeader } = headers;
     const token = (authHeader as string).split(' ')[1];
 
-    if (token === functions.config().abbot.key) {
+    if (verify(token, functions.config().abbot.key)) {
         const db = admin.database();
         const ref = db.ref('messages');
         ref.push().set(message)
