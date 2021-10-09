@@ -23,12 +23,13 @@ const url = __ENV.URL;
 const token = __ENV.TOKEN;
 
 export default () => {
+    const date = new Date().toISOString();
     const payload = {
         visible: true,
-        text: __ITER,
+        text: date,
         username: `Worker ${__VU}`,
         email: 'test@test.com',
-        created: new Date().toISOString
+        created: date
     }
   const params = {
     headers: {

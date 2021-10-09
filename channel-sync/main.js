@@ -7,7 +7,7 @@
     // this `visible` field is utilized to remove messages from the stream while preserving the data. e.g. if someone posts something inappropriate toggling this value in the db will remove it from view
     visible: true,
     text: bot.arguments,
-    username: bot.from.name,
+    username: bot.from.name !== '(unknown)' ? bot.from.name : bot.from.userName,
     email: bot.from.email,
     created: new Date().toISOString(),
   };
@@ -21,3 +21,4 @@
 }
 
 
+
