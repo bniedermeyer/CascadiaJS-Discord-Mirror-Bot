@@ -1,26 +1,39 @@
 import * as functions from "firebase-functions";
 import * as admin from 'firebase-admin';
 import { verify } from 'jsonwebtoken';
-import axios from 'axios';
+import { fetchGifInfo } from './gifs'
 
 admin.initializeApp(functions.config().firebase)
-const TENOR_URL_BASE = 'https://g.tenor.com/v1/gifs'
 
 export const postMessage = functions.https.onRequest(async (request, response) => {
-    const { body: message, headers } = request;
+    const { body, headers } = request;
+    const { email, ...message } = body;
     const { authorization: authHeader } = headers;
     const token = (authHeader as string).split(' ')[1];
 
     if (verify(token, functions.config().abbot.key)) {
+        let gif;
         if (message.text.match(/^https:\/\/tenor.com\/view\/.*\d+$/)) {
-            const gif = await fetchGifInfo(message.text)
-            if (gif) {
-                message.gif = gif;
-            }
+            gif = await fetchGifInfo(message.text, true)
+            
+        } else if (message.text.match(/\.gif$/)) {
+            gif = await fetchGifInfo(message.text, false);
         }
+        if (gif) {
+                message.gif = gif;
+        }
+        // note: by default we will receive service account auth since it's in the same project as the db
+        // this allows us to write to the db without needing a specific rule
         const db = admin.database();
+        const logRef = db.ref('messageLog');
         const ref = db.ref('messages');
-        ref.push().set(message)
+        const newMessageRef = ref.push()
+        // save the message to firebase
+        newMessageRef.set(message)
+        // store email sender for each message in case of CoC issues
+        // table will be deleted after conference.
+        const messageId = newMessageRef.key;
+        logRef.push().set({ messageId, email });
     } else {
         response.statusCode = 401;
     }
@@ -28,29 +41,3 @@ export const postMessage = functions.https.onRequest(async (request, response) =
     response.send("ok");
 });
 
-const fetchGifInfo = async (gifUrl: string): Promise<{title: string, gifUrl: string, preview: string} | null> => {
-    const tenorKey = functions.config().tenor.key;
-    const gifId = gifUrl.split('-').pop();
-    if (gifId) {
-        try {
-            const res = await axios.get(`${TENOR_URL_BASE}?ids=${gifId}&media_filter=minimal&key=${tenorKey}`);
-            const gifResults: any =  res.data;
-            if (gifResults.results) {
-                const { results } = gifResults;
-                const gifInfo = results[0];
-                const { title, media } = gifInfo;
-                const gif = media[0].gif;
-                const details = {
-                    title,
-                    gifUrl: gif.url,
-                    preview: gif.preview
-                }
-                return details;
-            }
-        } catch (error) {
-            functions.logger.error('Unable to fetch gif info', error.message)
-            return null
-        }
-    }
-    return null;
-}
