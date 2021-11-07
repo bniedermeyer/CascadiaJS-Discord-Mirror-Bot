@@ -42,71 +42,9 @@ export const postMessage = functions.https.onRequest(async (request, response) =
     response.send("ok");
 });
 
-// export const postQuestion = functions.https.onRequest((request, response) => {
-//     cors(request, response, () => {
-//         const { body, headers } = request;
-//         const { origin } = headers;
-//         if (!origin || !origin.match(/(2021\.cascadiajs\.com$|localhost)/)) {
-//             response.send(400)
-//         } else {
-//             const question = { ...body, count: 1, upvotedBy: [body.userId] }
-//             const db = admin.database();
-//             const ref = db.ref(`questions/${body.correlationId}`);
-//             const pushRef = ref.push(question);
-//             const { key } = pushRef;
-//             ref.child(key!).update({key})
-//             response.send(key) 
-//         }
-//     })
-// });
-
-// export const incrementQuestion = functions.https.onRequest((request, response) => {
-//     cors(request, response, () => {
-//         console.log('starting function')
-//         functions.logger.log('test logging')
-
-//         const { body, headers } = request;
-//         const { origin } = headers;
-//         if (!origin || !origin.match(/(2021\.cascadiajs\.com$|localhost)/)) {
-//             response.send(400)
-//         } else {
-//             // functions.logger.log('body: ', body)
-//             const {key, correlationId} = body
-//             const db = admin.database();
-//             const ref = db.ref(`questions/${correlationId}/${key}`);
-//             ref.transaction((currentVal) => {
-//                 functions.logger.log('current', JSON.stringify(currentVal));
-//                 if (currentVal) {
-//                     if (currentVal.upvotedBy.includes(body.userId)) {
-//                         functions.logger.log('user already voted')
-//                         // user already upvoted. Abort update
-//                         return undefined;
-//                     }
-                    
-//                     const updatedVal = { ...currentVal, count: currentVal.count + 1, upvotedBy: [...currentVal.upvotedBy, body.userId] }
-//                     functions.logger.log('updated val', JSON.stringify(updatedVal));
-//                     return updatedVal
-//                 } else {
-//                     return null
-//                 }
-//             }, (error, committed, snapshot)  => {
-//                 if (error) {
-//                     functions.logger.log('Transaction failed abnormally!', error);
-//                 } else if (!committed) {
-//                     functions.logger.log('We aborted the transaction.');
-//                 } else {
-//                     functions.logger.log('question incremented');
-//                 }
-//                 if (snapshot) {
-//                   functions.logger.log("Question: ", snapshot.val());
-//                 }
-//             });
-//             response.send('ok') 
-//         }
-//     })
-// });
-
-export const incrementQuestion = functions.https.onCall(async (data, context) => {
+export const incrementQuestion = functions.runWith({
+    minInstances: 1
+}).https.onCall(async (data, context) => {
     const { key, correlationId, userId } = data
     const validUser = await verifyUser(context.auth!.uid, userId)
     if (!validUser) {
@@ -143,7 +81,9 @@ export const incrementQuestion = functions.https.onCall(async (data, context) =>
     });
 });
 
-export const askQuestion = functions.https.onCall(async (data, context) => {
+export const askQuestion = functions.runWith({
+    minInstances: 2
+}).https.onCall(async (data, context) => {
     const { userId, correlationId } = data;
     const validUser = await verifyUser(context.auth!.uid, userId)
     if (!validUser) {

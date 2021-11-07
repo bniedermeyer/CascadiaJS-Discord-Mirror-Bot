@@ -1,4 +1,4 @@
-﻿if (bot.room.name === 'discord-widget-test') {
+﻿if (bot.room.name === 'livestream') {
 
   const fetch = require('node-fetch');
   const FIREBASE_URL = await bot.secrets.read('url-firebase');
@@ -21,4 +21,4 @@
 }
 
 
-
+
